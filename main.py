@@ -14,7 +14,9 @@ from sklearn.metrics import (
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 
-#load dataset
+# ===========================================
+# LOAD DATASET
+# ===========================================
 df = pd.read_csv("housing.csv")   
 
 print("===== 5 Data Teratas =====")
@@ -26,24 +28,41 @@ print(df.info())
 print("\n===== Cek Missing Value =====")
 print(df.isnull().sum())
 
-# data NaN pada kolom total_bedrooms diisi dengan median
+
+# ===========================================
+# HANDLE MISSING VALUE
+# ===========================================
+# data kosong → isi median
 df["total_bedrooms"] = df["total_bedrooms"].fillna(df["total_bedrooms"].median())
-# encoding kolom categorical menggunakan one-hot encoding
-# pemisahan fitur dan target
+
+# ===========================================
+# ENCODING KATEGORI 'ocean_proximity'
+# ===========================================
+df = pd.get_dummies(df, drop_first=True)
+
+# ===========================================
+# PISAHKAN FITUR & TARGET
+# ===========================================
 X = df.drop("median_house_value", axis=1)
 y = df["median_house_value"]
 
-# split data train dan test
+
+# ===========================================
+# SPLIT DATA TRAIN & TEST
+# ===========================================
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
-df = pd.get_dummies(df, drop_first=True)
 
 print("\nJumlah data train:", len(X_train))
 print("Jumlah data test :", len(X_test))
 
-# train dan evaluasi model regresi menggunakan xgboost dan lightgbm
+# ===========================================
+# MODEL 1 — XGBOOST REGRESSOR
+# ===========================================
+print("\n==============================")
 print("Training XGBoost Regressor")
+print("==============================")
 
 xgb = XGBRegressor(
     n_estimators=300,
@@ -74,7 +93,9 @@ print("MAPE :", mape_xgb)
 print("R²   :", r2_xgb)
 
 
-# lightgbm regressor
+# ===========================================
+# MODEL 2 — LIGHTGBM REGRESSOR
+# ===========================================
 print("\n==============================")
 print("Training LightGBM Regressor")
 print("==============================")
@@ -105,7 +126,10 @@ print("RMSE :", rmse_lgbm)
 print("MAPE :", mape_lgbm)
 print("R²   :", r2_lgbm)
 
-# visualisasi prediksi
+
+# ===========================================
+# VISUALISASI PREDIKSI
+# ===========================================
 plt.figure(figsize=(10, 6))
 plt.scatter(y_test, y_pred_xgb, alpha=0.5)
 plt.xlabel("Actual Value")
